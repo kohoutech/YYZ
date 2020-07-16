@@ -41,7 +41,7 @@ namespace YYZ.Parse
         SEMICOLON,
         LBRACE,
         RBRACE,
-        EQUALS,
+        EQUAL,
 
         EOF
     }

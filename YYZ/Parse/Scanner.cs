@@ -33,16 +33,21 @@ namespace YYZ.Parse
         int line;
         int col;
 
+        public Token token;
+
         Dictionary<string, TokenType> keywordTable;
 
         public Scanner(string _filename)
         {
             filename = _filename;
             
+            //init keywords
             keywordTable = new Dictionary<string, TokenType>();
             keywordTable["exports"] = TokenType.EXPORTS;
             keywordTable["proc"] = TokenType.PROC;
             keywordTable["var"] = TokenType.VAR;
+
+            token = null;
         }
 
         public bool openSource()
@@ -61,7 +66,7 @@ namespace YYZ.Parse
             return true;
         }
 
-        public Token getToken()
+        public void getToken()
         {
             char ch;
             Token tok = null;
@@ -96,7 +101,8 @@ namespace YYZ.Parse
             Location loc = new Location(line, col);
             if (srcpos == srcbuf.Length)
             {
-                return new Token(TokenType.EOF, loc);
+                token = new Token(TokenType.EOF, loc);
+                return;
             }
 
             ch = (char)srcbuf[srcpos++];
@@ -178,14 +184,19 @@ namespace YYZ.Parse
                         tok = new Token(TokenType.SEMICOLON, loc);
                         break;
                     case '=':
-                        tok = new Token(TokenType.EQUALS, loc);
+                        tok = new Token(TokenType.EQUAL, loc);
                         break;
                 }
 
             if (srcpos < srcbuf.Length)
             {
             }
-            return tok;
+            token = tok;
+        }
+
+        public void consume(TokenType ttok)
+        {
+            getToken();            
         }
     }
 }

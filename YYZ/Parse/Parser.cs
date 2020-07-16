@@ -27,23 +27,122 @@ namespace YYZ.Parse
     class Parser
     {
         string filename;
+        Scanner scanner;
 
         public Parser(string _filename)
         {
             filename = _filename;
+            scanner = null;
         }
 
         public void parseProgram()
         {
-            Scanner scanner = new Scanner(filename);
+            scanner = new Scanner(filename);
             scanner.openSource();
-            Token tok = scanner.getToken();
-            while (tok.ttype != TokenType.EOF)
+            scanner.getToken();
+
+            parseModule();
+        }
+
+        public void parseModule()
+        {
+            bool done = false;
+            do
             {
-                Console.WriteLine(tok.ToString());
-                tok = scanner.getToken();
+                switch (scanner.token.ttype)
+                {
+                    case TokenType.PROC:
+                        parseProcDecl();
+                        break;
+                    case TokenType.EXPORTS:
+                        parseExports();
+                        break;
+                    case TokenType.EOF:
+                        done = true;
+                        break;
+                }
+            } while (!done);
+        }
+
+        public void parseVarDecl()
+        {
+            scanner.consume(TokenType.VAR);
+
+            scanner.consume(TokenType.IDENT);
+
+            scanner.consume(TokenType.COLON);
+
+            scanner.consume(TokenType.IDENT);
+
+            scanner.consume(TokenType.SEMICOLON);
+        }
+
+        public void parseProcDecl()
+        {
+            scanner.consume(TokenType.PROC);
+
+            scanner.consume(TokenType.IDENT);
+
+            scanner.consume(TokenType.LPAREN);
+
+            scanner.consume(TokenType.RPAREN);
+
+            scanner.consume(TokenType.COLON);
+
+            scanner.consume(TokenType.IDENT);
+
+            parseProcBody();
+        }
+
+        public void parseProcBody()
+        {
+            bool done = false;
+            do
+            {
+                switch (scanner.token.ttype)
+                {
+                    case TokenType.VAR:
+                        parseVarDecl();
+                        break;
+                    case TokenType.LBRACE:
+                        done = true;
+                        break;
+                }
+            } while (!done);
+
+            parseBlock();
+        }
+
+        private void parseBlock()
+        {
+            scanner.consume(TokenType.LBRACE);
+            while (scanner.token.ttype != TokenType.RBRACE)
+            {
+                parseStatement();
             }
-            Console.WriteLine(tok.ToString());
+            scanner.consume(TokenType.RBRACE);
+        }
+
+        public void parseStatement()
+        {
+            parseExpression();
+            scanner.consume(TokenType.SEMICOLON);
+        }
+
+        public void parseExpression()
+        {
+            scanner.consume(TokenType.IDENT);
+
+            scanner.consume(TokenType.EQUAL);
+
+            scanner.consume(TokenType.INTCONST);
+        }
+
+        public void parseExports()
+        {
+            scanner.consume(TokenType.EXPORTS);
+            scanner.consume(TokenType.IDENT);
+            scanner.consume(TokenType.SEMICOLON);
         }
     }
 }

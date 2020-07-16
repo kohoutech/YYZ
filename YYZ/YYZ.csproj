@@ -47,5 +47,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assemble\" />
+    <Folder Include="CodeGen\" />
+    <Folder Include="Link\" />
+    <Folder Include="OBOE\" />
+    <Folder Include="OIL\" />
+    <Folder Include="ORAL\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
