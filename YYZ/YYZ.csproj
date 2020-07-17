@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OIL\OilNode.cs" />
     <Compile Include="Parse\Parser.cs" />
     <Compile Include="Parse\Scanner.cs" />
     <Compile Include="Parse\Token.cs" />
@@ -52,7 +53,6 @@
     <Folder Include="CodeGen\" />
     <Folder Include="Link\" />
     <Folder Include="OBOE\" />
-    <Folder Include="OIL\" />
     <Folder Include="ORAL\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

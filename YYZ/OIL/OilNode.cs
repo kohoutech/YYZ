@@ -1,0 +1,226 @@
+﻿/* ----------------------------------------------------------------------------
+YYZ - a source code compiler
+Copyright (C) 1997-2020  George E Greaney
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+----------------------------------------------------------------------------*/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+
+using YYZ.Parse;
+
+namespace YYZ.OIL
+{
+    class OilNode
+    {
+        public Location loc;
+
+        public virtual void printNode(StreamWriter oilfile)
+        {
+            //nothing
+        }
+    }
+
+    //- declaractions ---------------------------------------------------------
+
+    class OilModule : OilNode
+    {
+        public string filename;
+        public List<OilProc> procList;
+        public List<OilVar> varList;
+        public List<string> exportList;
+
+        public OilModule(string fn)
+        {
+            filename = fn;
+            varList = new List<OilVar>();
+            procList = new List<OilProc>();
+            exportList = new List<string>();
+        }
+
+        public void spill(string fn)
+        {
+            StreamWriter oilfile = new StreamWriter(fn);
+            this.printNode(oilfile);
+            oilfile.Close();
+        }
+
+        public override void printNode(StreamWriter oilfile)
+        {
+            oilfile.WriteLine("(module " + filename + ")");
+            oilfile.WriteLine("--------------------------------------------------");
+            foreach (OilVar ov in varList)
+            {
+                ov.printNode(oilfile);
+            }
+            oilfile.WriteLine("--------------------------------------------------");
+            foreach (OilProc op in procList)
+            {
+                op.printNode(oilfile);
+            }
+            oilfile.WriteLine("--------------------------------------------------");
+            oilfile.WriteLine("(exports)");
+            foreach (string exp in exportList)
+            {
+                oilfile.WriteLine(exp);
+            }
+        }
+    }
+
+    class OilVar : OilNode
+    {
+        public string name;
+        public OilType typ;
+
+        public override void printNode(StreamWriter oilfile)
+        {
+            oilfile.WriteLine("(var def " + name + ")");
+        }
+    }
+
+    class OilParam : OilNode
+    {
+        public override void printNode(StreamWriter oilfile)
+        {
+            //nothing
+        }
+    }
+
+    class OilProc : OilNode
+    {
+        public string name;
+        public List<OilParam> paramList;
+        public List<OilVar> varList;
+        public OilType retType;
+        public OilBlock block;
+
+        public OilProc()
+        {
+            name = "";
+            paramList = new List<OilParam>();
+            varList = new List<OilVar>();
+            retType = null;
+            block = null;
+        }
+
+        public override void printNode(StreamWriter oilfile)
+        {
+            oilfile.WriteLine("(proc " + name + ")");
+            foreach (OilParam op in paramList)
+            {
+                op.printNode(oilfile);
+            }
+            foreach (OilVar ov in varList)
+            {
+                ov.printNode(oilfile);
+            }
+            block.printNode(oilfile);
+        }
+    }
+
+    class OilType : OilNode
+    {
+        public override void printNode(StreamWriter oilfile)
+        {
+            //nothing
+        }
+    }
+
+    //- statements ------------------------------------------------------------
+
+    class OilBlock : OilNode
+    {
+        public List<OilStatement> stmtList;
+
+        public OilBlock()
+        {
+            stmtList = new List<OilStatement>();
+        }
+
+        public override void printNode(StreamWriter oilfile)
+        {
+            oilfile.WriteLine("(block)");
+            foreach (OilStatement os in stmtList)
+            {
+                os.printNode(oilfile);
+            }
+        }
+    }
+
+    class OilStatement : OilNode
+    {
+
+    }
+
+    class OilAssign : OilStatement
+    {
+        public OilExpression left;
+        public OilExpression right;
+
+        public OilAssign(OilExpression l, OilExpression r)
+        {
+            left = l;
+            right = r;
+        }
+
+        public override void printNode(StreamWriter oilfile)
+        {
+            oilfile.WriteLine("(assignment)");
+            left.printNode(oilfile);
+            right.printNode(oilfile);
+        }
+    }
+
+    //- expressions -----------------------------------------------------------
+
+    class OilExpression : OilNode
+    {
+
+    }
+
+    class OilVarRef : OilExpression
+    {
+        public string name;
+
+        public OilVarRef(string _name)
+        {
+            name = _name;
+        }
+
+        public override void printNode(StreamWriter oilfile)
+        {
+            oilfile.WriteLine("(var ref [" + name + "])");
+        }
+    }
+
+    class OilIntConst : OilExpression
+    {
+        public long val;
+
+        public OilIntConst(long _val)
+        {
+            val = _val;
+        }
+
+        public override void printNode(StreamWriter oilfile)
+        {
+            oilfile.WriteLine("(int const [" + val + "])");
+        }
+    }
+}

@@ -90,8 +90,7 @@ namespace YYZ.Parse
 
         public override string ToString()
         {
-            return "location = (" + line + "," + col + ")";
+            return "loc = (" + line + "," + col + ")";
         }
-
     }
 }

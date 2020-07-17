@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using YYZ.OIL;
+
 namespace YYZ.Parse
 {
     class Parser
@@ -29,10 +31,15 @@ namespace YYZ.Parse
         string filename;
         Scanner scanner;
 
+        public OilModule module;
+        OilProc curProc;
+
         public Parser(string _filename)
         {
             filename = _filename;
             scanner = null;
+            module = null;
+            curProc = null;
         }
 
         public void parseProgram()
@@ -42,10 +49,13 @@ namespace YYZ.Parse
             scanner.getToken();
 
             parseModule();
+            module.spill("oil.spill.txt");
         }
 
         public void parseModule()
         {
+            module = new OilModule(filename);
+
             bool done = false;
             do
             {
@@ -68,19 +78,35 @@ namespace YYZ.Parse
         {
             scanner.consume(TokenType.VAR);
 
-            scanner.consume(TokenType.IDENT);
+            while (scanner.token.ttype == TokenType.IDENT)
+            {
+                OilVar vardef = new OilVar();
+                vardef.name = scanner.token.ident;
+                scanner.consume(TokenType.IDENT);
 
-            scanner.consume(TokenType.COLON);
+                scanner.consume(TokenType.COLON);
 
-            scanner.consume(TokenType.IDENT);
+                scanner.consume(TokenType.IDENT);
 
-            scanner.consume(TokenType.SEMICOLON);
+                scanner.consume(TokenType.SEMICOLON);
+                if (curProc != null)
+                {
+                    curProc.varList.Add(vardef);
+                }
+                else
+                {
+                    module.varList.Add(vardef);
+                }
+            }
         }
 
         public void parseProcDecl()
         {
+            curProc = new OilProc();
+
             scanner.consume(TokenType.PROC);
 
+            curProc.name = scanner.token.ident;
             scanner.consume(TokenType.IDENT);
 
             scanner.consume(TokenType.LPAREN);
@@ -92,6 +118,9 @@ namespace YYZ.Parse
             scanner.consume(TokenType.IDENT);
 
             parseProcBody();
+
+            module.procList.Add(curProc);
+            curProc = null;
         }
 
         public void parseProcBody()
@@ -115,33 +144,63 @@ namespace YYZ.Parse
 
         private void parseBlock()
         {
+            OilBlock block = new OilBlock();
             scanner.consume(TokenType.LBRACE);
+
             while (scanner.token.ttype != TokenType.RBRACE)
             {
-                parseStatement();
+                OilStatement stmt = parseStatement();
+                block.stmtList.Add(stmt);
             }
             scanner.consume(TokenType.RBRACE);
+            curProc.block = block;
         }
 
-        public void parseStatement()
+        public OilStatement parseStatement()
         {
-            parseExpression();
+            OilStatement s1 = parseAssignment();
             scanner.consume(TokenType.SEMICOLON);
+            return s1;
         }
 
-        public void parseExpression()
+        private OilAssign parseAssignment()
         {
-            scanner.consume(TokenType.IDENT);
-
+            OilExpression e1 = parseExpression();
             scanner.consume(TokenType.EQUAL);
+            OilExpression e2 = parseExpression();
 
-            scanner.consume(TokenType.INTCONST);
+            OilAssign s1 = new OilAssign(e1, e2);
+            return s1;
+        }
+
+        public OilExpression parseExpression()
+        {
+            OilExpression e1 = null;
+            switch (scanner.token.ttype)
+            {
+                case TokenType.IDENT:
+                    {
+                        e1 = new OilVarRef(scanner.token.ident);
+                        scanner.consume(TokenType.IDENT);
+                        break;
+                    }
+                case TokenType.INTCONST:
+                    {
+                        e1 = new OilIntConst(scanner.token.intval);
+                        scanner.consume(TokenType.INTCONST);
+                        break;
+                    }
+            }
+            return e1;
         }
 
         public void parseExports()
         {
             scanner.consume(TokenType.EXPORTS);
+            
+            module.exportList.Add(scanner.token.ident);
             scanner.consume(TokenType.IDENT);
+
             scanner.consume(TokenType.SEMICOLON);
         }
     }
