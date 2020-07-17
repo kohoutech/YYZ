@@ -26,7 +26,7 @@ using YYZ.OIL;
 
 namespace YYZ.Parse
 {
-    class Parser
+    public class Parser
     {
         string filename;
         Scanner scanner;
@@ -34,13 +34,26 @@ namespace YYZ.Parse
         public OilModule module;
         OilProc curProc;
 
+        SymTblStack symstack;
+
         public Parser(string _filename)
         {
             filename = _filename;
             scanner = null;
             module = null;
             curProc = null;
+
+            symstack = new SymTblStack();
+            SymbolTable globalsyms = new SymbolTable();
+            symstack.push(globalsyms);
+
+            //initialize build in types
+            globalsyms.add("void", new OilType(OilType.Typ.VOID));
+            globalsyms.add("int", new OilType(OilType.Typ.INT));
+            globalsyms.add("float", new OilType(OilType.Typ.FLOAT));
+            globalsyms.add("char", new OilType(OilType.Typ.CHAR));
         }
+
 
         public void parseProgram()
         {
@@ -82,10 +95,14 @@ namespace YYZ.Parse
             {
                 OilVar vardef = new OilVar();
                 vardef.name = scanner.token.ident;
+                symstack.top().add(vardef.name, vardef);
                 scanner.consume(TokenType.IDENT);
 
                 scanner.consume(TokenType.COLON);
 
+                string typename = scanner.token.ident;
+                OilType vartype = (OilType)symstack.find(typename);
+                vardef.typ = vartype;
                 scanner.consume(TokenType.IDENT);
 
                 scanner.consume(TokenType.SEMICOLON);
@@ -107,6 +124,7 @@ namespace YYZ.Parse
             scanner.consume(TokenType.PROC);
 
             curProc.name = scanner.token.ident;
+            symstack.top().add(curProc.name, curProc);
             scanner.consume(TokenType.IDENT);
 
             scanner.consume(TokenType.LPAREN);
@@ -115,6 +133,9 @@ namespace YYZ.Parse
 
             scanner.consume(TokenType.COLON);
 
+            string typename = scanner.token.ident;
+            OilType rettype = (OilType)symstack.find(typename);
+            curProc.retType = rettype;
             scanner.consume(TokenType.IDENT);
 
             parseProcBody();

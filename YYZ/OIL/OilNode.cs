@@ -27,7 +27,7 @@ using YYZ.Parse;
 
 namespace YYZ.OIL
 {
-    class OilNode
+    public class OilNode
     {
         public Location loc;
 
@@ -39,7 +39,7 @@ namespace YYZ.OIL
 
     //- declaractions ---------------------------------------------------------
 
-    class OilModule : OilNode
+    public class OilModule : OilNode
     {
         public string filename;
         public List<OilProc> procList;
@@ -83,18 +83,18 @@ namespace YYZ.OIL
         }
     }
 
-    class OilVar : OilNode
+    public class OilVar : OilNode
     {
         public string name;
         public OilType typ;
 
         public override void printNode(StreamWriter oilfile)
         {
-            oilfile.WriteLine("(var def " + name + ")");
+            oilfile.WriteLine("(var def " + name + ", type = " + typ.ToString() + ")");
         }
     }
 
-    class OilParam : OilNode
+    public class OilParam : OilNode
     {
         public override void printNode(StreamWriter oilfile)
         {
@@ -102,7 +102,7 @@ namespace YYZ.OIL
         }
     }
 
-    class OilProc : OilNode
+    public class OilProc : OilNode
     {
         public string name;
         public List<OilParam> paramList;
@@ -121,7 +121,7 @@ namespace YYZ.OIL
 
         public override void printNode(StreamWriter oilfile)
         {
-            oilfile.WriteLine("(proc " + name + ")");
+            oilfile.WriteLine("(proc " + name + ", rettype = " + retType.ToString() + ")");
             foreach (OilParam op in paramList)
             {
                 op.printNode(oilfile);
@@ -134,17 +134,39 @@ namespace YYZ.OIL
         }
     }
 
-    class OilType : OilNode
+    public class OilType : OilNode
     {
+        public enum Typ
+        {
+            VOID,
+            INT,
+            FLOAT,
+            CHAR
+        }
+
+        public Typ typ;
+
+        public OilType (Typ _typ)
+        {
+            typ = _typ;
+        }
+
+        static string[] typnames = { "void", "int", "float", "char" };
+
+        public override string ToString()
+        {
+            return typnames[(int)typ];
+        }
+
         public override void printNode(StreamWriter oilfile)
         {
-            //nothing
+            oilfile.WriteLine("(type " + typnames[(int)typ] + ")");
         }
     }
 
     //- statements ------------------------------------------------------------
 
-    class OilBlock : OilNode
+    public class OilBlock : OilNode
     {
         public List<OilStatement> stmtList;
 
@@ -163,12 +185,12 @@ namespace YYZ.OIL
         }
     }
 
-    class OilStatement : OilNode
+    public class OilStatement : OilNode
     {
 
     }
 
-    class OilAssign : OilStatement
+    public class OilAssign : OilStatement
     {
         public OilExpression left;
         public OilExpression right;
@@ -189,12 +211,12 @@ namespace YYZ.OIL
 
     //- expressions -----------------------------------------------------------
 
-    class OilExpression : OilNode
+    public class OilExpression : OilNode
     {
 
     }
 
-    class OilVarRef : OilExpression
+    public class OilVarRef : OilExpression
     {
         public string name;
 
@@ -209,7 +231,7 @@ namespace YYZ.OIL
         }
     }
 
-    class OilIntConst : OilExpression
+    public class OilIntConst : OilExpression
     {
         public long val;
 

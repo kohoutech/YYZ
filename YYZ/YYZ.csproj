@@ -44,6 +44,7 @@
     <Compile Include="OIL\OilNode.cs" />
     <Compile Include="Parse\Parser.cs" />
     <Compile Include="Parse\Scanner.cs" />
+    <Compile Include="Parse\SymbolTable.cs" />
     <Compile Include="Parse\Token.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -24,7 +24,7 @@ using System.Text;
 
 namespace YYZ.Parse
 {
-    enum TokenType
+    public enum TokenType
     {
         IDENT,
         INTCONST,
@@ -46,7 +46,7 @@ namespace YYZ.Parse
         EOF
     }
 
-    class Token
+    public class Token
     {
         string[] TOKENNAME = { "ident", "int const", "EXPORTS", "PROC", "VAR", "(", ")", ":", ";", "{", "}", "=", "eof" };
 
@@ -77,7 +77,7 @@ namespace YYZ.Parse
         }
     }
 
-    class Location
+    public class Location
     {
         int line;
         int col;
