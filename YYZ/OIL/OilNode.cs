@@ -27,8 +27,22 @@ using YYZ.Parse;
 
 namespace YYZ.OIL
 {
+    public enum OilNodeType
+    {
+        MODULE,
+        VAR,
+        PARAM,
+        PROC,
+        TYPE,
+        BLOCK,
+        ASSIGN,
+        VARREF,
+        INTCONST
+    }
+
     public class OilNode
     {
+        public OilNodeType type;
         public Location loc;
 
         public virtual void printNode(StreamWriter oilfile)
@@ -48,6 +62,7 @@ namespace YYZ.OIL
 
         public OilModule(string fn)
         {
+            type = OilNodeType.MODULE;
             filename = fn;
             varList = new List<OilVar>();
             procList = new List<OilProc>();
@@ -88,6 +103,11 @@ namespace YYZ.OIL
         public string name;
         public OilType typ;
 
+        public OilVar()
+        {
+            type = OilNodeType.VAR;
+        }
+
         public override void printNode(StreamWriter oilfile)
         {
             oilfile.WriteLine("(var def " + name + ", type = " + typ.ToString() + ")");
@@ -96,6 +116,11 @@ namespace YYZ.OIL
 
     public class OilParam : OilNode
     {
+        public OilParam()
+        {
+            type = OilNodeType.PARAM;
+        }
+
         public override void printNode(StreamWriter oilfile)
         {
             //nothing
@@ -112,6 +137,7 @@ namespace YYZ.OIL
 
         public OilProc()
         {
+            type = OilNodeType.PROC;
             name = "";
             paramList = new List<OilParam>();
             varList = new List<OilVar>();
@@ -148,6 +174,7 @@ namespace YYZ.OIL
 
         public OilType (Typ _typ)
         {
+            type = OilNodeType.TYPE;
             typ = _typ;
         }
 
@@ -172,6 +199,7 @@ namespace YYZ.OIL
 
         public OilBlock()
         {
+            type = OilNodeType.BLOCK;
             stmtList = new List<OilStatement>();
         }
 
@@ -187,7 +215,7 @@ namespace YYZ.OIL
 
     public class OilStatement : OilNode
     {
-
+        //abstract base class
     }
 
     public class OilAssign : OilStatement
@@ -197,6 +225,7 @@ namespace YYZ.OIL
 
         public OilAssign(OilExpression l, OilExpression r)
         {
+            type = OilNodeType.ASSIGN;
             left = l;
             right = r;
         }
@@ -213,7 +242,7 @@ namespace YYZ.OIL
 
     public class OilExpression : OilNode
     {
-
+        //abstract base class
     }
 
     public class OilVarRef : OilExpression
@@ -222,6 +251,7 @@ namespace YYZ.OIL
 
         public OilVarRef(string _name)
         {
+            type = OilNodeType.VARREF;
             name = _name;
         }
 
@@ -237,6 +267,7 @@ namespace YYZ.OIL
 
         public OilIntConst(long _val)
         {
+            type = OilNodeType.INTCONST;
             val = _val;
         }
 

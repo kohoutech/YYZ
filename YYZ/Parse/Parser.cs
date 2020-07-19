@@ -55,7 +55,7 @@ namespace YYZ.Parse
         }
 
 
-        public void parseProgram()
+        public OilModule parseProgram()
         {
             scanner = new Scanner(filename);
             scanner.openSource();
@@ -63,6 +63,7 @@ namespace YYZ.Parse
 
             parseModule();
             module.spill("oil.spill.txt");
+            return module;
         }
 
         public void parseModule()

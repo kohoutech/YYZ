@@ -22,25 +22,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using YYZ.Parse;
 using YYZ.OIL;
-using YYZ.CodeGen;
 
-namespace YYZ
+
+namespace YYZ.CodeGen
 {
-    class Program
+    class Generator
     {
-        static void Main(string[] args)
-        {
-            string filename = args[0];
-            Parser parser = new Parser(filename);
-            OilModule module = parser.parseProgram();
-            Generator generator = new Generator();
-            generator.generate(module);
+        OilModule module;
 
-            Console.WriteLine("done.");
+        List<GenProc> procList;
+
+        public Generator()
+        {
+
+        }
+
+        public void generate(OilModule _module)
+        {
+            module = _module;
+
+            firstPass();
+
+            secondPass();
+        }
+
+        public void firstPass()
+        {
+            foreach (OilProc proc in module.procList)
+            {
+                GenProc genproc = new GenProc(proc);
+                procList.Add(genproc);
+
+                foreach(OilVar oilvar in proc.varList)
+                {
+                    GenVar genvar = new GenVar(oilvar);
+                    genproc.varList.Add(genvar);
+                }
+            }
+        }
+
+        public void secondPass()
+        {
+
         }
     }
 }
-
-//Console.WriteLine("There's no sun in the shadow of the wizard");
