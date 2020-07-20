@@ -21,7 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using YYZ.OIL;
+using YYZ.ORAL;
 
 namespace YYZ.CodeGen
 {
@@ -33,7 +35,14 @@ namespace YYZ.CodeGen
         {
             nodeTable[node] = this;
         }
+
+        public virtual void secondPass(List<Instruction> insnList)
+        {
+            //does nothing
+        }
     }
+
+    //- declarations ----------------------------------------------------------
 
     public class GenVar : GenNode
     {
@@ -42,6 +51,11 @@ namespace YYZ.CodeGen
         public GenVar(OilVar _oilvar) : base(_oilvar)
         {
             oilvar = _oilvar;
+        }
+
+        public override void secondPass(List<Instruction> insnList)
+        {
+            //does nothing
         }
     }
 
@@ -60,6 +74,11 @@ namespace YYZ.CodeGen
             {
                 varList.Add(new GenVar(ov));
             }
+        }
+
+        public override void secondPass(List<Instruction> insnList)
+        {
+            //does nothing
         }
     }
 
@@ -80,6 +99,11 @@ namespace YYZ.CodeGen
             {
                 stmt = GenStatement.getStmtNode(os);
             }
+        }
+
+        public override void secondPass(List<Instruction> insnList)
+        {
+            //does nothing
         }
     }
 
@@ -111,6 +135,11 @@ namespace YYZ.CodeGen
             oilassign = _oilassign;
             left = GenExpression.getExprNode(oilassign.left);
             right = GenExpression.getExprNode(oilassign.right);
+        }
+
+        public override void secondPass(List<Instruction> insnList)
+        {
+            //does nothing
         }
     }
 
@@ -144,6 +173,11 @@ namespace YYZ.CodeGen
         {
             oilvarref = _oilvarref;
         }
+
+        public override void secondPass(List<Instruction> insnList)
+        {
+            //does nothing
+        }
     }
 
     public class GenIntConst : GenExpression
@@ -153,6 +187,11 @@ namespace YYZ.CodeGen
         public GenIntConst(OilIntConst _oilintconst) : base(_oilintconst)
         {
             oilintconst = _oilintconst;
+        }
+
+        public override void secondPass(List<Instruction> insnList)
+        {
+            //does nothing
         }
     }
 }

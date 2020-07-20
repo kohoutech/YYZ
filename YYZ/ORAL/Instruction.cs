@@ -22,49 +22,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using YYZ.OIL;
-using YYZ.ORAL;
-
-namespace YYZ.CodeGen
+namespace YYZ.ORAL
 {
-    class Generator
+    public class Instruction
     {
-        OilModule module;
-
-        List<GenProc> procList;
-
-        List<Instruction> insnList;
-
-        public Generator()
-        {
-
-        }
-
-        public void generate(OilModule _module)
-        {
-            module = _module;
-
-            firstPass();
-
-            insnList = new List<Instruction>();
-            secondPass();
-        }
-
-        public void firstPass()
-        {
-            foreach (OilProc proc in module.procList)
-            {
-                GenProc genproc = new GenProc(proc);
-                procList.Add(genproc);
-            }
-        }
-
-        public void secondPass()
-        {
-            foreach (GenProc proc in procList)
-            {
-                proc.secondPass(insnList);
-            }
-        }
     }
+
+    //- directives -----------------------------------------------------------
+    
+    public class SectionDir : Instruction 
+    { 
+    }
+
+    public class SymbolDir : Instruction
+    {
+    }
+
+    //- operations ------------------------------------------------------------
+
+    public class PushOp : Instruction
+    {
+    }
+
+    public class MovOp : Instruction
+    {
+    }
+
+    public class LeaOp : Instruction
+    {
+    }
+
+    public class LeaveOp : Instruction
+    {
+    }
+
+    public class RetOp : Instruction
+    {
+    }
+
+
+
+
 }

@@ -44,6 +44,7 @@
     <Compile Include="CodeGen\Generator.cs" />
     <Compile Include="CodeGen\GenNode.cs" />
     <Compile Include="OIL\OilNode.cs" />
+    <Compile Include="ORAL\Instruction.cs" />
     <Compile Include="Parse\Parser.cs" />
     <Compile Include="Parse\Scanner.cs" />
     <Compile Include="Parse\SymbolTable.cs" />
@@ -55,7 +56,6 @@
     <Folder Include="Assemble\" />
     <Folder Include="Link\" />
     <Folder Include="OBOE\" />
-    <Folder Include="ORAL\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
